@@ -26,9 +26,9 @@ def async_learn(device: broadlink.Device):
             break
 
     # Format the data properly for SmartIR
-    data = ''.join(format(x, '02x') for x in bytearray(data))
+    data = "".join(format(x, "02x") for x in bytearray(data))
     decode_hex = codecs.getdecoder("hex_codec")
-    return base64.b64encode(decode_hex(data)[0]).decode('utf-8')
+    return base64.b64encode(decode_hex(data)[0]).decode("utf-8")
 
 
 def validateNumber(value):

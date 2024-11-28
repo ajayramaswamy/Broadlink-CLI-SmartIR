@@ -12,19 +12,19 @@ import os
 
 
 def getLogger():
-    configLogLevel = os.environ.get('LOG_LEVEL', 'INFO').upper()
+    configLogLevel = os.environ.get("LOG_LEVEL", "INFO").upper()
     logging.basicConfig(level=logging._nameToLevel[configLogLevel])
     return logging.getLogger(__name__)
 
 
 def scanDevices():
     devices = []
-    print('Scanning for devices...\n')
+    print("Scanning for devices...\n")
     for device in broadlink.xdiscover():
         devices.append(device)
 
     if len(devices) == 0:
-        print('No devices found')
+        print("No devices found")
         exit()
 
     return devices
@@ -38,14 +38,14 @@ def showAndSelectDevice(devices: List[broadlink.Device]) -> broadlink.Device:
         deviceIpToDevice[device.host[0]] = device
         deviceHosts.append(device.host[0])
 
-    selectedDeviceIp = questionary.select('Select Device', choices=deviceHosts).ask()
+    selectedDeviceIp = questionary.select("Select Device", choices=deviceHosts).ask()
 
     # Fetch the device from the hashmap
     device = deviceIpToDevice[selectedDeviceIp]
 
     # Currently only support RM4 Pro + RM4 Mini
-    if 'rm4' not in device.model.lower():
-        print(f'Invalid Device - {device.model} is not supported')
+    if "rm4" not in device.model.lower():
+        print(f"Invalid Device - {device.model} is not supported")
         exit()
 
     device.auth()
@@ -53,19 +53,23 @@ def showAndSelectDevice(devices: List[broadlink.Device]) -> broadlink.Device:
 
 
 def selectDeviceType() -> DeviceType:
-    selectedDeviceType = questionary.select('Select Device Type', choices=[deviceType.name for deviceType in DeviceType]).ask()
+    selectedDeviceType = questionary.select(
+        "Select Device Type", choices=[deviceType.name for deviceType in DeviceType]
+    ).ask()
     return selectedDeviceType
 
 
 def promptManufacturer():
-    manufacturer = questionary.text('Enter Manufacturer').ask()
+    manufacturer = questionary.text("Enter Manufacturer").ask()
     return manufacturer
 
 
 def promptSupportedModels():
-    supportedModels = questionary.text('Enter Supported Models Number / Names (comma separated)').ask()
-    if ',' in supportedModels:
-        supportedModels = supportedModels.split(',')
+    supportedModels = questionary.text(
+        "Enter Supported Models Number / Names (comma separated)"
+    ).ask()
+    if "," in supportedModels:
+        supportedModels = supportedModels.split(",")
     else:
         supportedModels = [supportedModels]
 
@@ -74,12 +78,12 @@ def promptSupportedModels():
 
 def saveConfig(config: dict, deviceType: str):
     # Create the out folder if it doesn't exist
-    if not os.path.exists('./out'):
-        os.makedirs('./out')
+    if not os.path.exists("./out"):
+        os.makedirs("./out")
 
-    manufacturer = config['manufacturer']
-    fileName = f'./out/{deviceType}-{manufacturer}-{time.time()}.json'
-    with open(fileName, 'w') as f:
+    manufacturer = config["manufacturer"]
+    fileName = f"./out/{deviceType}-{manufacturer}-{time.time()}.json"
+    with open(fileName, "w") as f:
         json.dump(config, f, indent=4)
 
 
@@ -107,7 +111,7 @@ def main():
 
     # Save the output file
     saveConfig(outputConfig, deviceType)
-    print('Finished - Config saved to ./out directory\n')
+    print("Finished - Config saved to ./out directory\n")
 
 
 main()
